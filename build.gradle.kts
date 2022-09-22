@@ -8,6 +8,7 @@ plugins {
     kotlin("jvm") version "1.7.10"
     id("io.ktor.plugin") version "2.1.1"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.7.10"
+    id("com.github.johnrengelman.shadow") version "5.0.0"
 }
 
 group = "com.planet.lily.cddb"
@@ -43,3 +44,16 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 }
+
+val jar by tasks.getting(Jar::class) {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes["Main-Class"] = "com.planet.lily.cddb.ApplicationKt"
+    }
+    configurations["runtimeClasspath"].forEach { file: File ->
+        from(zipTree(file.absoluteFile))
+    }
+}
+
+tasks.create("stage").dependsOn("installDist")

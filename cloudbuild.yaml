@@ -1,0 +1,33 @@
+steps:
+  - name: 'gradle:7.5.0-jdk17'
+    args:
+      - shadowJar
+    entrypoint: gradle
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - '-t'
+      - gcr.io/pokebuild/octopus-cddb
+      - '--build-arg'
+      - _DB_PATH=$_DB_PATH
+      - '--build-arg'
+      - _DB_USER=$_DB_USER
+      - '--build-arg'
+      - _DB_PASS=$_DB_PASS
+      - .
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - gcr.io/pokebuild/octopus-cddb
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - run
+      - deploy
+      - octopus-cddb-$BRANCH_NAME
+      - '--image'
+      - gcr.io/pokebuild/octopus-cddb
+      - '--region'
+      - asia-northeast1
+    entrypoint: gcloud
+images:
+  - gcr.io/pokebuild/octopus-cddb
