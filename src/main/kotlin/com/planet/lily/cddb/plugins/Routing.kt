@@ -23,7 +23,7 @@ private fun Route.album() {
             call.respond(album.getAlbumList())
         }
         post {
-            call.respond(album.addAlbum(call.receive<AlbumJson>()))
+            call.respond(album.addAlbum(call.receive()))
         }
         route("{id}") {
             get {
@@ -38,7 +38,7 @@ private fun Route.album() {
                     "有効なアルバムIDを指定してください",
                     status = HttpStatusCode.BadRequest
                 )
-                call.respond(album.updateAlbum(id, call.receive<AlbumJson>()))
+                call.respond(album.updateAlbum(id, call.receive()))
             }
             delete {
                 val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
@@ -51,5 +51,7 @@ private fun Route.album() {
     }
 }
 
-data class AlbumJson(val title: String, val releaseDate: String, val label: Int?, val albumType: Int,
-                     val recordNumber: String?, val albumVersion: String?)
+data class AlbumJson(
+    val title: String, val releaseDate: String, val label: Int?, val albumType: Int,
+    val recordNumber: String?, val albumVersion: String?
+)
