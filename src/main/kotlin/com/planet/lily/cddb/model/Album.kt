@@ -1,12 +1,11 @@
 package com.planet.lily.cddb.model
 
+import com.planet.lily.cddb.entity.AlbumDiscs
+import com.planet.lily.cddb.entity.AlbumSongMap
 import com.planet.lily.cddb.entity.Albums
 import com.planet.lily.cddb.plugins.AlbumJson
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.jetbrains.exposed.sql.update
 import java.time.LocalDate
 
 class Album {
@@ -38,5 +37,11 @@ class Album {
             it[recordNumber] = album.recordNumber
             it[albumVersion] = album.albumVersion
         }
+    }
+
+    fun deleteAlbum(id: Int) = transaction {
+        AlbumDiscs.deleteWhere { AlbumDiscs.albumId eq id }
+        AlbumSongMap.deleteWhere { AlbumSongMap.albumId eq id }
+        Albums.deleteWhere { Albums.id eq id }
     }
 }

@@ -40,6 +40,13 @@ private fun Route.album() {
                 )
                 call.respond(album.updateAlbum(id, call.receive<AlbumJson>()))
             }
+            delete {
+                val id = call.parameters["id"]?.toInt() ?: return@delete call.respondText(
+                    "有効なアルバムIDを指定してください",
+                    status = HttpStatusCode.BadRequest
+                )
+                call.respond(album.deleteAlbum(id))
+            }
         }
     }
 }
