@@ -3,6 +3,7 @@ package com.planet.lily.cddb.plugins
 import com.planet.lily.cddb.model.Album
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
@@ -21,6 +22,9 @@ private fun Route.album() {
         get {
             call.respond(album.getAlbumList())
         }
+        post {
+            call.respond(album.addAlbum(call.receive<AlbumJson>()))
+        }
         route("{id}") {
             get {
                 val id = call.parameters["id"]?.toInt() ?: return@get call.respondText(
@@ -32,3 +36,6 @@ private fun Route.album() {
         }
     }
 }
+
+data class AlbumJson(val title: String, val releaseDate: String, val label: Int?, val albumType: Int,
+                     val recordNumber: String?, val albumVersion: String?)
