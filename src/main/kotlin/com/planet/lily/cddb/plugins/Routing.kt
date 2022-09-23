@@ -33,6 +33,13 @@ private fun Route.album() {
                 )
                 call.respond(album.getAlbum(id))
             }
+            put {
+                val id = call.parameters["id"]?.toInt() ?: return@put call.respondText(
+                    "有効なアルバムIDを指定してください",
+                    status = HttpStatusCode.BadRequest
+                )
+                call.respond(album.updateAlbum(id, call.receive<AlbumJson>()))
+            }
         }
     }
 }
