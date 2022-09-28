@@ -18,15 +18,26 @@ class Album {
     }
 
     fun addAlbum(album: AlbumJson) = transaction {
-        Albums.insert {
+        val albumId = Albums.insert {
             it[title] = album.title
             it[release] = LocalDate.parse(album.releaseDate)
             it[albumLabel] = album.label
             it[albumType] = album.albumType
             it[recordNumber] = album.recordNumber
             it[albumVersion] = album.albumVersion
+        } get Albums.id
+        if (album.discs.isNotEmpty()) {
+            album.discs.forEach { disc ->
+                AlbumDiscs.insert {
+                    it[AlbumDiscs.albumId] = albumId
+                    it[discNumber] = disc.discNumber
+                    it[discTitle] = disc.discTitle
+                    it[cddb_id] = disc.cddbId
+                }
+            }
         }
-    }
+        albumId.value
+     }
 
     fun updateAlbum(id: Int, album: AlbumJson) = transaction {
         Albums.update({ Albums.id eq id }) {
@@ -36,6 +47,15 @@ class Album {
             it[albumType] = album.albumType
             it[recordNumber] = album.recordNumber
             it[albumVersion] = album.albumVersion
+        }
+        if (album.discs.isNotEmpty()) {
+            album.discs.forEach { disc ->
+                AlbumDiscs.update({ AlbumDiscs.albumId eq id}) {
+                    it[discNumber] = disc.discNumber
+                    it[discTitle] = disc.discTitle
+                    it[cddb_id] = disc.cddbId
+                }
+            }
         }
     }
 

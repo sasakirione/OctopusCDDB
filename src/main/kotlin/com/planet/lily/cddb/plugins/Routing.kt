@@ -53,5 +53,9 @@ private fun Route.album() {
 
 data class AlbumJson(
     val title: String, val releaseDate: String, val label: Int?, val albumType: Int,
-    val recordNumber: String?, val albumVersion: String?
+    val recordNumber: String?, val albumVersion: String?, val discs: List<AlbumDiscJson>
+)
+
+data class AlbumDiscJson(
+    val discNumber: Int, val discTitle: String?, val cddbId: String?
 )
