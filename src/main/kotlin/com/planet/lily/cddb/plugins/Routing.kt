@@ -1,6 +1,7 @@
 package com.planet.lily.cddb.plugins
 
 import com.planet.lily.cddb.model.Album
+import com.planet.lily.cddb.model.OriginalSong
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -11,8 +12,50 @@ fun Application.configureRouting() {
     routing {
         route("v1") {
             album()
+            originalSong()
         }
     }
+}
+
+private fun Route.originalSong() {
+    val originalSong = OriginalSong()
+
+    route("originalSong") {
+            get {
+                call.respond(originalSong.getOriginalSongList())
+            }
+            get("{id}") {
+                val id = call.parameters["id"]?.toIntOrNull()
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                    return@get
+                }
+                call.respond(originalSong.getOriginalSong(id))
+            }
+            post {
+                val song = call.receive<OriginalSongJson>()
+                call.respond(originalSong.addOriginalSong(song))
+            }
+            put("{id}") {
+                val id = call.parameters["id"]?.toIntOrNull()
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                    return@put
+                }
+                val song = call.receive<OriginalSongJson>()
+                originalSong.updateOriginalSong(id, song)
+                call.respond(HttpStatusCode.OK)
+            }
+            delete("{id}") {
+                val id = call.parameters["id"]?.toIntOrNull()
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                    return@delete
+                }
+                originalSong.deleteOriginalSong(id)
+                call.respond(HttpStatusCode.OK)
+            }
+        }
 }
 
 private fun Route.album() {
@@ -58,4 +101,8 @@ data class AlbumJson(
 
 data class AlbumDiscJson(
     val discNumber: Int, val discTitle: String?, val cddbId: String?
+)
+
+data class OriginalSongJson(
+    val title: String, val artist: String
 )
