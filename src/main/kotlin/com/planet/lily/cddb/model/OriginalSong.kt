@@ -3,6 +3,7 @@ package com.planet.lily.cddb.model
 import com.planet.lily.cddb.entity.Artists
 import com.planet.lily.cddb.entity.OriginalSongs
 import com.planet.lily.cddb.plugins.OriginalSongJson
+import com.planet.lily.cddb.plugins.OriginalSongJson2
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -29,5 +30,9 @@ class OriginalSong {
 
     fun deleteOriginalSong(id: Int) = transaction {
         OriginalSongs.deleteWhere { OriginalSongs.id eq id }
+    }
+
+    fun updateOriginalSong2(id: Int, song: OriginalSongJson2) = transaction {
+        OriginalSongs.update({OriginalSongs.id eq id}){ it[title] = song.title; it[originalArtist] = song.artist }
     }
 }

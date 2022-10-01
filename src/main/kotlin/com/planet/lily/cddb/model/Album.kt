@@ -3,6 +3,7 @@ package com.planet.lily.cddb.model
 import com.planet.lily.cddb.entity.AlbumDiscs
 import com.planet.lily.cddb.entity.AlbumSongMap
 import com.planet.lily.cddb.entity.Albums
+import com.planet.lily.cddb.plugins.AlbumDiscJson
 import com.planet.lily.cddb.plugins.AlbumJson
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -14,8 +15,16 @@ class Album {
     }
 
     fun getAlbum(id: Int) = transaction {
-        Albums.select { Albums.id eq id }.first()
+        Albums.select { Albums.id eq id }.map {
+            AlbumJson(it[Albums.title], it[Albums.release].toString(), it[Albums.albumLabel]?.value,
+                it[Albums.albumType]?.value, it[Albums.recordNumber], it[Albums.albumVersion], getAlbumDiscs(id))
+        }.first()
     }
+
+    private fun getAlbumDiscs(id: Int)  =
+        AlbumDiscs.select { AlbumDiscs.albumId eq id }.map {
+            AlbumDiscJson(it[AlbumDiscs.discNumber], it[AlbumDiscs.discTitle], it[AlbumDiscs.cddb_id])
+        }
 
     fun addAlbum(album: AlbumJson) = transaction {
         val albumId = Albums.insert {

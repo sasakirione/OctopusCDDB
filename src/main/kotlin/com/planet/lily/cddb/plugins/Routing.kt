@@ -20,42 +20,55 @@ fun Application.configureRouting() {
 private fun Route.originalSong() {
     val originalSong = OriginalSong()
 
-    route("originalSong") {
-            get {
-                call.respond(originalSong.getOriginalSongList())
-            }
-            get("{id}") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                if (id == null) {
-                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
-                    return@get
-                }
-                call.respond(originalSong.getOriginalSong(id))
-            }
-            post {
-                val song = call.receive<OriginalSongJson>()
-                call.respond(originalSong.addOriginalSong(song))
-            }
-            put("{id}") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                if (id == null) {
-                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
-                    return@put
-                }
-                val song = call.receive<OriginalSongJson>()
-                originalSong.updateOriginalSong(id, song)
-                call.respond(HttpStatusCode.OK)
-            }
-            delete("{id}") {
-                val id = call.parameters["id"]?.toIntOrNull()
-                if (id == null) {
-                    call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
-                    return@delete
-                }
-                originalSong.deleteOriginalSong(id)
-                call.respond(HttpStatusCode.OK)
-            }
+    route("original-song") {
+        get {
+            call.respond(originalSong.getOriginalSongList())
         }
+        get("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                return@get
+            }
+            call.respond(originalSong.getOriginalSong(id))
+        }
+        post {
+            val song = call.receive<OriginalSongJson>()
+            call.respond(originalSong.addOriginalSong(song))
+        }
+        put("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                return@put
+            }
+            val song = call.receive<OriginalSongJson>()
+            originalSong.updateOriginalSong(id, song)
+            call.respond(HttpStatusCode.OK)
+        }
+        delete("{id}") {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                return@delete
+            }
+            originalSong.deleteOriginalSong(id)
+            call.respond(HttpStatusCode.OK)
+        }
+    }
+
+    route("original-song2/{id}") {
+        put {
+            val id = call.parameters["id"]?.toIntOrNull()
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest, "Missing or malformed id")
+                return@put
+            }
+            val song = call.receive<OriginalSongJson2>()
+            originalSong.updateOriginalSong2(id, song)
+            call.respond(HttpStatusCode.OK)
+        }
+    }
 }
 
 private fun Route.album() {
@@ -95,7 +108,7 @@ private fun Route.album() {
 }
 
 data class AlbumJson(
-    val title: String, val releaseDate: String, val label: Int?, val albumType: Int,
+    val title: String, val releaseDate: String, val label: Int?, val albumType: Int?,
     val recordNumber: String?, val albumVersion: String?, val discs: List<AlbumDiscJson>
 )
 
@@ -105,4 +118,8 @@ data class AlbumDiscJson(
 
 data class OriginalSongJson(
     val title: String, val artist: String
+)
+
+data class OriginalSongJson2(
+    val title: String, val artist: Int
 )
