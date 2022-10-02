@@ -103,6 +103,13 @@ private fun Route.album() {
                 )
                 call.respond(album.deleteAlbum(id))
             }
+            get("songs") {
+                val id = call.parameters["id"]?.toInt() ?: return@get call.respondText(
+                    "有効なアルバムIDを指定してください",
+                    status = HttpStatusCode.BadRequest
+                )
+                call.respond(album.getSongsForAlbum(id))
+            }
         }
     }
 }
@@ -119,6 +126,15 @@ data class AlbumJson2(
 
 data class AlbumDiscJson(
     val discNumber: Int, val discTitle: String?, val cddbId: String?
+)
+
+data class AlbumSongJson2(
+    val discNumber: Int, val trackNumber: Int, val title: String, val artist: String, val artistId: Int, val words: List<CreatorJson2>,
+    val composer: List<CreatorJson2>, val arranger: List<CreatorJson2>, val originalSongId: Int
+)
+
+data class CreatorJson2(
+    val type: String, val name: String, val id: Int
 )
 
 data class OriginalSongJson(

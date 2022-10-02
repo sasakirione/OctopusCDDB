@@ -1,9 +1,7 @@
 package com.planet.lily.cddb.model
 
 import com.planet.lily.cddb.entity.*
-import com.planet.lily.cddb.plugins.AlbumDiscJson
-import com.planet.lily.cddb.plugins.AlbumJson
-import com.planet.lily.cddb.plugins.AlbumJson2
+import com.planet.lily.cddb.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
@@ -72,4 +70,44 @@ class Album {
         AlbumSongMap.deleteWhere { AlbumSongMap.albumId eq id }
         Albums.deleteWhere { Albums.id eq id }
     }
+
+    fun getSongsForAlbum(id: Int) = transaction {
+        val songs = AlbumSongMap.innerJoin(Songs).select { AlbumSongMap.albumId eq id }.toList()
+        songs.map {
+            val artistPair = getArtist(it[Songs.id].value)
+            AlbumSongJson2(
+                discNumber = it[AlbumSongMap.discNumber],
+                trackNumber = it[AlbumSongMap.trackNumber],
+                title = it[Songs.title],
+                artist = artistPair.first,
+                artistId = artistPair.second,
+                words = getWords(it[Songs.id].value),
+                composer = getComposer(it[Songs.id].value),
+                arranger = getArranger(it[Songs.id].value),
+                originalSongId = it[Songs.originalId].value)
+        }
+    }
+
+    private fun getArtist(id: Int): Pair<String, Int> {
+        val res = SongArtistMap.innerJoin(Artists).select { SongArtistMap.songId eq id }
+            .map { it[Artists.name] to it[Artists.id] }
+        val names = res.joinToString(",") { it.first }
+        val ids = res.map { it.second.value }.first()
+        return names to ids
+    }
+
+    private fun getWords(id: Int): List<CreatorJson2> =
+        Lyricists.innerJoin(Musicians).innerJoin(LyricistTypes).select { Lyricists.songId eq id }.map {
+            CreatorJson2(it[LyricistTypes.name], it[Musicians.name], it[Musicians.id].value)
+        }
+
+    private fun getComposer(id: Int): List<CreatorJson2> =
+        Composers.innerJoin(Musicians).select { Composers.songId eq id }.map {
+            CreatorJson2("作曲", it[Musicians.name], it[Musicians.id].value)
+        }
+
+    private fun getArranger(id: Int): List<CreatorJson2> =
+        Arrangers.innerJoin(Musicians).innerJoin(ArrangeTypes).select { Arrangers.songId eq id }.map {
+            CreatorJson2(it[ArrangeTypes.name], it[Musicians.name], it[Musicians.id].value)
+        }
 }
