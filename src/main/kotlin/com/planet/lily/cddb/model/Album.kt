@@ -1,10 +1,9 @@
 package com.planet.lily.cddb.model
 
-import com.planet.lily.cddb.entity.AlbumDiscs
-import com.planet.lily.cddb.entity.AlbumSongMap
-import com.planet.lily.cddb.entity.Albums
+import com.planet.lily.cddb.entity.*
 import com.planet.lily.cddb.plugins.AlbumDiscJson
 import com.planet.lily.cddb.plugins.AlbumJson
+import com.planet.lily.cddb.plugins.AlbumJson2
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.LocalDate
@@ -15,9 +14,9 @@ class Album {
     }
 
     fun getAlbum(id: Int) = transaction {
-        Albums.select { Albums.id eq id }.map {
-            AlbumJson(it[Albums.title], it[Albums.release].toString(), it[Albums.albumLabel]?.value,
-                it[Albums.albumType]?.value, it[Albums.recordNumber], it[Albums.albumVersion], getAlbumDiscs(id))
+        Albums.innerJoin(Labels).innerJoin(AlbumTypes).select { Albums.id eq id }.map {
+            AlbumJson2(it[Albums.title], it[Albums.release].toString(), it[Labels.name],
+                it[AlbumTypes.name], it[Albums.recordNumber], it[Albums.albumVersion], getAlbumDiscs(id))
         }.first()
     }
 

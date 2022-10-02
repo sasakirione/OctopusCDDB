@@ -112,6 +112,11 @@ data class AlbumJson(
     val recordNumber: String?, val albumVersion: String?, val discs: List<AlbumDiscJson>
 )
 
+data class AlbumJson2(
+    val title: String, val releaseDate: String, val label: String?, val albumType: String?,
+    val recordNumber: String?, val albumVersion: String?, val discs: List<AlbumDiscJson>
+)
+
 data class AlbumDiscJson(
     val discNumber: Int, val discTitle: String?, val cddbId: String?
 )
