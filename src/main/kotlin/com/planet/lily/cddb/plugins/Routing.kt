@@ -129,7 +129,7 @@ data class AlbumDiscJson(
 )
 
 data class AlbumSongJson2(
-    val discNumber: Int, val trackNumber: Int, val title: String, val artist: String, val artistId: Int, val words: List<CreatorJson2>,
+    val discNumber: Int, val trackNumber: Int, val title: String, val artist: String, val artistId: Int, val word: List<CreatorJson2>,
     val composer: List<CreatorJson2>, val arranger: List<CreatorJson2>, val originalSongId: Int
 )
 

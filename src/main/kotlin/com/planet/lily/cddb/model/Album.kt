@@ -81,7 +81,7 @@ class Album {
                 title = it[Songs.title],
                 artist = artistPair.first,
                 artistId = artistPair.second,
-                words = getWords(it[Songs.id].value),
+                word = getWords(it[Songs.id].value),
                 composer = getComposer(it[Songs.id].value),
                 arranger = getArranger(it[Songs.id].value),
                 originalSongId = it[Songs.originalId].value)
