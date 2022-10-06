@@ -18,6 +18,10 @@ class Album {
         }.first()
     }
 
+    fun getAlbumList(text: String) = transaction {
+        Albums.select { Albums.title like text }.map { it[Albums.id].value to (it[Albums.title] + " " + it[Albums.albumVersion].orEmpty()) }
+    }
+
     private fun getAlbumDiscs(id: Int)  =
         AlbumDiscs.select { AlbumDiscs.albumId eq id }.map {
             AlbumDiscJson(it[AlbumDiscs.discNumber], it[AlbumDiscs.discTitle], it[AlbumDiscs.cddb_id])

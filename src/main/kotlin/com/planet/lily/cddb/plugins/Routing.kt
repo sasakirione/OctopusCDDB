@@ -111,6 +111,13 @@ private fun Route.album() {
                 call.respond(album.getSongsForAlbum(id))
             }
         }
+        get("{text}") {
+            val text = call.parameters["text"] ?: return@get call.respondText(
+                "有効なアルバムIDを指定してください",
+                status = HttpStatusCode.BadRequest
+            )
+            call.respond(album.getAlbumList(text))
+        }
     }
 }
 
@@ -144,3 +151,4 @@ data class OriginalSongJson(
 data class OriginalSongJson2(
     val title: String, val artist: Int
 )
+
