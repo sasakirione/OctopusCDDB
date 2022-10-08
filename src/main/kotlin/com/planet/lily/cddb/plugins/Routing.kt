@@ -21,6 +21,14 @@ private fun Route.originalSong() {
     val originalSong = OriginalSong()
 
     route("original-song") {
+        get("title/{text}") {
+            val text = call.parameters["text"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+            call.respond(originalSong.getOriginalSongByName("%$text%"))
+        }
+        get("artist/{text}") {
+            val text = call.parameters["text"] ?: return@get call.respond(HttpStatusCode.BadRequest)
+            call.respond(originalSong.getOriginalSongByArtist("%$text%"))
+        }
         get {
             call.respond(originalSong.getOriginalSongList())
         }
@@ -111,12 +119,12 @@ private fun Route.album() {
                 call.respond(album.getSongsForAlbum(id))
             }
         }
-        get("{text}") {
+        get("search/{text}") {
             val text = call.parameters["text"] ?: return@get call.respondText(
                 "有効なアルバムIDを指定してください",
                 status = HttpStatusCode.BadRequest
             )
-            call.respond(album.getAlbumList(text))
+            call.respond(album.getAlbumList("%$text%"))
         }
     }
 }
@@ -150,5 +158,9 @@ data class OriginalSongJson(
 
 data class OriginalSongJson2(
     val title: String, val artist: Int
+)
+
+data class OriginalSongJson3(
+    val title: String, val artist: String, val id: Int
 )
 
