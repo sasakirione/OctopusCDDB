@@ -9,4 +9,5 @@ object Albums: IntIdTable() {
     val albumLabel = reference("album_label", Labels).nullable()
     val albumType = reference("album_type", AlbumTypes).nullable()
     val recordNumber = varchar("record_number", 31).nullable()
+    val albumVersion = varchar("album_version", 63).nullable()
 }

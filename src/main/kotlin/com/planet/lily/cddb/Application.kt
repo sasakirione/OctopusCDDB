@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
-fun Application.module(testing: Boolean = false) {
+fun Application.module() {
     configureHTTP()
     configureSerialization()
     configureSecurity()
@@ -27,7 +27,7 @@ fun Application.module(testing: Boolean = false) {
 }
 
 fun dbMigration() = transaction {
-    SchemaUtils.create(AlbumDiscs, Albums, AlbumSongMap, AlbumTypes, Arrangers, ArrangeTypes, Artists,
+    SchemaUtils.create(AlbumDiscs, Albums, AlbumSongMap, AlbumTypes, Arrangers, ArrangeTypes, Artists, ArtistMap,
         Brands, Composers, Countries, Genres, Labels, Lyricists, LyricistTypes, MusicianNameMap, Musicians,
         OriginalSongs, Publishers, SongArtistMap, SongGenreMap, Songs, SongTieUpMap, SongTypes, TieUpMapTypes,
         TieUps, TieUpTypes
