@@ -10,13 +10,10 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Put)
         allowMethod(HttpMethod.Delete)
         allowMethod(HttpMethod.Patch)
+        anyHost()
         allowHost("localhost")
         allowHost("vercel.app")
         allowHost("sasakirione.com")
-        allowHeader("CrossDomain")
-        allowHeader("X-CSRF-Token")
-        allowHeader("authorization")
-        allowHeader("Content-Type")
         allowHeader("*")
         allowCredentials = true
     }
