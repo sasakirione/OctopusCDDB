@@ -6,8 +6,7 @@ import com.planet.lily.cddb.plugins.configureRouting
 import com.planet.lily.cddb.plugins.configureSecurity
 import com.planet.lily.cddb.plugins.configureSerialization
 import io.ktor.server.application.*
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -27,9 +26,25 @@ fun Application.module() {
 }
 
 fun dbMigration() = transaction {
-    SchemaUtils.create(AlbumDiscs, Albums, AlbumSongMap, AlbumTypes, Arrangers, ArrangeTypes, Artists, ArtistMap,
-        Brands, Composers, Countries, Genres, Labels, Lyricists, LyricistTypes, MusicianNameMap, Musicians,
+    SchemaUtils.create(AlbumDiscs, Albums, AlbumSongMap, AlbumTypes, Artists, ArtistMap, CreatorTypes,
+        Brands, Countries, Genres, Labels, MusicianNameMap, Musicians, CreatorMusicianMap, Creators, OriginalCreators,
         OriginalSongs, Publishers, SongArtistMap, SongGenreMap, Songs, SongTieUpMap, SongTypes, TieUpMapTypes,
         TieUps, TieUpTypes
     )
+    setCreatorType()
+}
+
+fun setCreatorType() {
+    insertOfCreatorTypes("作詞")
+    insertOfCreatorTypes("作曲")
+    insertOfCreatorTypes("編曲")
+    insertOfCreatorTypes("演奏")
+    insertOfCreatorTypes("弦編曲")
+    insertOfCreatorTypes("ラップ詞")
+    insertOfCreatorTypes("翻訳詞")
+}
+
+fun insertOfCreatorTypes(typeName : String) {
+    CreatorTypes.select { CreatorTypes.typeName eq typeName }.firstOrNull()
+        ?: CreatorTypes.insert { it[CreatorTypes.typeName] = typeName }
 }
