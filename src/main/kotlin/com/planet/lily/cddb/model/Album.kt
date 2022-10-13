@@ -84,15 +84,17 @@ class Album {
         val songs = AlbumSongMap.innerJoin(Songs).select { AlbumSongMap.albumId eq id }.toList()
         songs.map {
             val artistPair = getArtist(it[Songs.id].value)
+            val creator = OriginalCreators.innerJoin(Creators).innerJoin(CreatorTypes)
+                .select { (OriginalCreators.originalSong eq id) }.toList()
             AlbumSongJson2(
                 discNumber = it[AlbumSongMap.discNumber],
                 trackNumber = it[AlbumSongMap.trackNumber],
                 title = it[Songs.title],
                 artist = artistPair.first,
                 artistId = artistPair.second,
-                word = getWords(it[Songs.originalId].value),
-                composer = getComposer(it[Songs.originalId].value),
-                arranger = getArranger(it[Songs.originalId].value),
+                word = getWords(creator),
+                composer = getComposer(creator),
+                arranger = getArranger(creator),
                 originalSongId = it[Songs.originalId].value
             )
         }
@@ -106,21 +108,18 @@ class Album {
         return names to ids
     }
 
-    private fun getWords(id: Int): List<CreatorJson2> =
-        OriginalCreators.innerJoin(Creators).innerJoin(CreatorTypes)
-            .select { (OriginalCreators.originalSong eq id) and (CreatorTypes.typeName.inList(lyrics)) }.map {
+    private fun getWords(creators: List<ResultRow>): List<CreatorJson2> =
+        creators.filter { creator -> lyrics.contains(creator[CreatorTypes.typeName]) }.map {
             CreatorJson2(it[CreatorTypes.typeName], it[Creators.creatorName], it[Creators.id].value)
         }
 
-    private fun getComposer(id: Int): List<CreatorJson2> =
-        OriginalCreators.innerJoin(Creators).innerJoin(CreatorTypes)
-            .select { (OriginalCreators.originalSong eq id) and (CreatorTypes.typeName eq "作曲") }.map {
+    private fun getComposer(creators: List<ResultRow>): List<CreatorJson2> =
+        creators.filter { creator -> creator[CreatorTypes.typeName] == "作曲" }.map {
             CreatorJson2("作曲", it[Creators.creatorName], it[Creators.id].value)
         }
 
-    private fun getArranger(id: Int): List<CreatorJson2> =
-        OriginalCreators.innerJoin(Creators).innerJoin(CreatorTypes)
-            .select { (OriginalCreators.originalSong eq id) and (CreatorTypes.typeName.inList(arranger)) }.map {
+    private fun getArranger(creators: List<ResultRow>): List<CreatorJson2> =
+        creators.filter { creator -> arranger.contains(creator[CreatorTypes.typeName]) }.map {
             CreatorJson2(it[CreatorTypes.typeName], it[Creators.creatorName], it[Creators.id].value)
         }
 }
