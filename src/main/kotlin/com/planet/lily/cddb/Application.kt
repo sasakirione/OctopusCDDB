@@ -32,19 +32,36 @@ fun dbMigration() = transaction {
         TieUps, TieUpTypes
     )
     setCreatorType()
+    setAlbumType()
 }
 
 fun setCreatorType() {
-    insertOfCreatorTypes("作詞")
-    insertOfCreatorTypes("作曲")
-    insertOfCreatorTypes("編曲")
-    insertOfCreatorTypes("演奏")
-    insertOfCreatorTypes("弦編曲")
-    insertOfCreatorTypes("ラップ詞")
-    insertOfCreatorTypes("翻訳詞")
+    insertCreatorTypes("作詞")
+    insertCreatorTypes("作曲")
+    insertCreatorTypes("編曲")
+    insertCreatorTypes("演奏")
+    insertCreatorTypes("弦編曲")
+    insertCreatorTypes("ラップ詞")
+    insertCreatorTypes("翻訳詞")
 }
 
-fun insertOfCreatorTypes(typeName : String) {
+fun insertCreatorTypes(typeName : String) {
     CreatorTypes.select { CreatorTypes.typeName eq typeName }.firstOrNull()
         ?: CreatorTypes.insert { it[CreatorTypes.typeName] = typeName }
+}
+
+fun setAlbumType() {
+    insertAlbumTypes("マキシシングルCD")
+    insertAlbumTypes("アルバムCD")
+    insertAlbumTypes("通常配信")
+    insertAlbumTypes("先行配信")
+    insertAlbumTypes("LP盤")
+    insertAlbumTypes("EP盤")
+    insertAlbumTypes("カセットテープ")
+    insertAlbumTypes("ライブBD/DVD")
+}
+
+fun insertAlbumTypes(typeName : String) {
+    AlbumTypes.select { AlbumTypes.name eq typeName }.firstOrNull()
+        ?: AlbumTypes.insert { it[name] = typeName }
 }
