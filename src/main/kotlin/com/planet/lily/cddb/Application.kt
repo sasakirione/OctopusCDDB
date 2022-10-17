@@ -33,6 +33,19 @@ fun dbMigration() = transaction {
     )
     setCreatorType()
     setAlbumType()
+    setCountry()
+}
+
+fun setCountry() {
+    insertCountry(1, "日本", "JPN")
+}
+
+fun insertCountry(index: Int, countryName: String, countryNameCode: String) {
+    Countries.select { Countries.id eq index }.firstOrNull() ?: Countries.insert {
+        it[id] = index
+        it[name] = countryName
+        it[code] = countryNameCode
+    }
 }
 
 fun setCreatorType() {
