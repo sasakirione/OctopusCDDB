@@ -20,6 +20,23 @@ fun dbMigration() = transaction {
 
 fun setCountry() {
     insertCountry(1, "日本", "JPN")
+    insertCountry(2, "アメリカ", "USA")
+    insertCountry(3, "イギリス", "GBR")
+    insertCountry(4, "フランス", "FRA")
+    insertCountry(5, "ドイツ", "DEU")
+    insertCountry(6, "イタリア", "ITA")
+    insertCountry(7, "スペイン", "ESP")
+    insertCountry(8, "オーストラリア", "AUS")
+    insertCountry(9, "カナダ", "CAN")
+    insertCountry(10, "韓国", "KOR")
+    insertCountry(11, "中国", "CHN")
+    insertCountry(12, "台湾", "TWN")
+    insertCountry(13, "インド", "IND")
+    insertCountry(14, "インドネシア", "IDN")
+    insertCountry(15, "フィンランド", "FIN")
+    insertCountry(16, "ベルギー", "BEL")
+    insertCountry(17, "ノルウェー", "NOR")
+    insertCountry(18, "スウェーデン", "SWE")
 }
 
 fun insertCountry(index: Int, countryName: String, countryNameCode: String) {
